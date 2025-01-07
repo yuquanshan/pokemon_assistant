@@ -10,10 +10,16 @@ MY_TEAM = [
     Pokemon(name="火爆猴", types=[PokemonType.FIGHTING], attack_type=PokemonType.FIGHTING, special_attack_types=[PokemonType.FIGHTING]),
 ]
 
+TYPE_TEAM = [
+    Pokemon(name=t.value, types=[t], attack_type=t, special_attack_types=[t])
+    for t in PokemonType
+]
+
 key = None
 while True:
-    print("Welcome to Pokemon assistant, type any character to start recording, q to quit!")
+    print("Welcome to Pokemon assistant, type any character to start recording, t to recommend a type, q to quit!")
     key = getch.getch()
     if key == 'q':
         break
-    listenAndResponse(MY_TEAM)
+    team = TYPE_TEAM if key == 't' else MY_TEAM
+    listenAndResponse(team)
