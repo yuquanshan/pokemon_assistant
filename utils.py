@@ -100,7 +100,7 @@ def listenAndResponse(my_team:[Pokemon]):
 
 def build_rivalry_types(alters: [str]) -> [PokemonType]:
     v = {
-        PokemonType.NORMAL: ["yiban"],
+        PokemonType.NORMAL: ["yiban", "putong"],
         PokemonType.FIGHTING: ["gedou"],
         PokemonType.FLYING: ["feixing"],
         PokemonType.POISON: ["du", "duxi"],
