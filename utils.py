@@ -1,7 +1,5 @@
 import os
 import time
-import pyaudio
-import wave
 import speech_recognition as sr
 import pinyin
 import re
@@ -14,6 +12,7 @@ RECOGNIZER = sr.Recognizer()
 SPEAKER = pyttsx3.init()
 SPEAKER.setProperty('rate', 250)
 RIVAL_TYPE_NOT_FOUND = "未找到对手属性"
+SAME_TYPE_MULTIPLIER = 1.2
 
 class PokemonType(Enum):
     NORMAL = "一般"
@@ -117,7 +116,7 @@ def build_rivalry_types(alters: [str]) -> [PokemonType]:
         PokemonType.ICE: ["bingxi", "bin"],
         PokemonType.DRAGON: ["longxi"],
         PokemonType.DARK: ["exi", "emo", "heian", "anhei"],
-        PokemonType.FAIRY: ["yaojing"],
+        PokemonType.FAIRY: ["yaojing", "jingling"],
     }
     rival_types = []
     for alter in alters:
@@ -143,17 +142,17 @@ def calc_advantage(pokemon: Pokemon, rival_types: [PokemonType]) -> int:
 def calc_attack_effect(pokemon: Pokemon, rival_types: [PokemonType]) -> int:
     res = 1.0
     for r in rival_types:
-        res = res * ATTACK_EFFECTS[pokemon.attack_type][r]
+        res = res * ATTACK_EFFECTS[pokemon.attack_type][r] * (SAME_TYPE_MULTIPLIER if pokemon.attack_type in pokemon.types else 1.0)
     return res
 
 
 def calc_defense_effect(pokemon: Pokemon, rival_types: [PokemonType]) -> int:
-    # for double type rival, assuming its attack type is equally probable
+    # for double type rival, assuming its attack type is equally probable and rival always uses same-type attach
     fct = 1 / len(rival_types)
     res = 0.0
     for r in rival_types:
         eff = 1.0
         for t in pokemon.types:
-            eff = eff * max(0.001, ATTACK_EFFECTS[r][t]) # avoid dividing by 0
+            eff = eff * max(0.001, ATTACK_EFFECTS[r][t] * SAME_TYPE_MULTIPLIER) # avoid dividing by 0
         res = res + fct * eff
     return res
